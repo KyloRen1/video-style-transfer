@@ -1,9 +1,16 @@
+from cv2.cv2 import VideoCapture
 from telegram import bot, Bot
 from telegram.ext import Updater, run_async, MessageHandler, Filters
 
+from app.model import StyleTransferModel
+
 TOKEN = "1449211534:AAHKKLwNpIFioaDOnolbnG8ZEpFcFUkDkbw"
+MODELS_DIR = "/Users/ioneuk/Documents/machine-learning/style-transfer/Video-style-transfer/models"
+STYLE_PATH = "/Users/ioneuk/Documents/machine-learning/style-transfer/Video-style-transfer/rm.jpg"
 
 bot = Bot(TOKEN)
+model = StyleTransferModel(MODELS_DIR)
+model.load_style(STYLE_PATH)
 
 
 @run_async
@@ -13,7 +20,7 @@ def document_handler(update, context):
 
 @run_async
 def message_handler(update, context):
-    print("")
+    bot.send_message(update.message.chat.id, "Send video file")
 
 
 @run_async
@@ -22,7 +29,10 @@ def video_handler(update, context):
     video_id = video.file_id
 
     video_meta = bot.get_file(video_id)
-    video_bytes = video_meta.download_as_bytearray()
+
+    video_meta.download("out.avi")
+    video_capture = VideoCapture("out.avi")
+    frames = model.inference(video_capture)
     print("")
 
 

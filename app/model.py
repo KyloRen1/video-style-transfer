@@ -1,13 +1,13 @@
 import os
+
+from cv2.cv2 import resize, INTER_CUBIC
+
 os.chdir('../style_transfer')
-import cv2
 import torch
-import numpy as np
 from PIL import Image
-from libs.Matrix import MulLayer
-import torch.backends.cudnn as cudnn
-from libs.models import encoder3,encoder4
-from libs.models import decoder3,decoder4
+from app.libs.Matrix import MulLayer
+from app.libs.models import encoder3
+from app.libs.models import decoder3
 import torchvision.transforms as transforms
 
 class StyleTransferModel:
@@ -56,28 +56,29 @@ class StyleTransferModel:
         with torch.no_grad():
             # sometimes doesn't work from first time lol
             try:
-                sF = vgg(style)
+                sF = self.vgg(self.style)
             except:
-                sF = vgg(style)
+                sF = self.vgg(self.style)
 
         while True:
             
             ret,frame = cap.read()
             if not ret:
                 break
-            frame = cv2.resize(frame,(512,256),interpolation=cv2.INTER_CUBIC)
+            frame = resize(frame,(512,256),interpolation=INTER_CUBIC)
             frame = frame.transpose((2,0,1))
             frame = frame[::-1,:,:]
             frame = frame/255.0
+
             frame = torch.from_numpy(frame.copy()).unsqueeze(0)
-            content.data.resize_(frame.size()).copy_(frame)
+            self.content.data.resize_(frame.size()).copy_(frame)
             with torch.no_grad():
-                cF = vgg(content)
+                cF = self.vgg(self.content)
                 if(self.layer == 'r41'):
-                    feature,transmatrix = matrix(cF[self.layer],sF[self.layer])
+                    feature,transmatrix = self.matrix(cF[self.layer],sF[self.layer])
                 else:
-                    feature,transmatrix = matrix(cF,sF)
-                transfer = dec(feature)
+                    feature,transmatrix = self.matrix(cF,sF)
+                transfer = self.dec(feature)
             transfer = transfer.clamp(0,1).squeeze(0).data.cpu().numpy()
             transfer = transfer.transpose((1,2,0))
             transfer = transfer[...,::-1]
