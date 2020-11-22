@@ -1,12 +1,20 @@
-import uvicorn
-from fastapi import FastAPI, UploadFile, File
+from telegram.ext import Updater, CommandHandler, run_async
 
-app = FastAPI()
+TOKEN = "1449211534:AAHKKLwNpIFioaDOnolbnG8ZEpFcFUkDkbw"
 
 
-@app.post("/uploadvideo/")
-async def create_upload_file(file: UploadFile = File(...)):
-    pass
+@run_async
+def transfer_video(update, context):
+    print("hello")
 
-if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+
+def main():
+    updater = Updater(TOKEN, use_context=True)
+    dp = updater.dispatcher
+    dp.add_handler(CommandHandler('transfer_video', transfer_video))
+    updater.start_polling()
+    updater.idle()
+
+
+if __name__ == '__main__':
+    main()
