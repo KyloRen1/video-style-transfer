@@ -4,10 +4,10 @@ import torch
 import argparse
 import numpy as np
 from PIL import Image
-from libs.Matrix import MulLayer
+from app.libs.Matrix import MulLayer
 import torch.backends.cudnn as cudnn
-from libs.models import encoder3,encoder4
-from libs.models import decoder3,decoder4
+from app.libs.models import encoder3,encoder4
+from app.libs.models import decoder3,decoder4
 import torchvision.transforms as transforms
 
 parser = argparse.ArgumentParser()

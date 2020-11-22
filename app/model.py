@@ -24,10 +24,10 @@ class StyleTransferModel:
 
         self.load_model(model_dir)
         self.eval()
-        if self.device == 'cuda':
-            self.matrix.cuda()
-            self.vgg.cuda()
-            self.dec.cuda()
+
+        self.matrix.to(self.device)
+        self.vgg.to(self.device)
+        self.dec.to(self.device)
         self.fine_size = fine_size
         self.content = torch.Tensor(1, 3, self.fine_size, self.fine_size).to(self.device)
 
@@ -47,7 +47,7 @@ class StyleTransferModel:
     def load_style(self, imgPath):
         img = Image.open(imgPath).convert('RGB')
         transform = transforms.Compose([
-            transforms.Scale(self.fineSize),
+            transforms.Scale(self.fine_size),
             transforms.ToTensor()])
         self.style = transform(img).unsqueeze(0).to(self.device)
 

@@ -10,7 +10,7 @@ import os
 import torch.nn as nn
 from torch.autograd import Variable
 import numpy as np
-from libs.utils import whiten
+from app.libs.utils import whiten
 
 def is_image_file(filename):
     return any(filename.endswith(extension) for extension in [".png", ".jpg", ".jpeg"])

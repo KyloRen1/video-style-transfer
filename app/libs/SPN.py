@@ -6,7 +6,7 @@ from collections import OrderedDict
 import torch.nn.functional as F
 import sys
 sys.path.append('../../style-transfer/')
-from libs.pytorch_spn.modules.gaterecurrent2dnoind import GateRecurrent2dnoind
+from app.libs.pytorch_spn.modules.gaterecurrent2dnoind import GateRecurrent2dnoind
 
 class spn_block(nn.Module):
     def __init__(self, horizontal, reverse):
