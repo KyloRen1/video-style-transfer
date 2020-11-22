@@ -2,13 +2,14 @@ import os
 
 from cv2.cv2 import resize, INTER_CUBIC
 
-os.chdir('../style_transfer')
+# os.chdir('../style_transfer')
 import torch
 from PIL import Image
 from app.libs.Matrix import MulLayer
 from app.libs.models import encoder3
 from app.libs.models import decoder3
 import torchvision.transforms as transforms
+
 
 class StyleTransferModel:
     def __init__(self, model_dir, fine_size=256):
@@ -46,8 +47,8 @@ class StyleTransferModel:
     def load_style(self, imgPath):
         img = Image.open(imgPath).convert('RGB')
         transform = transforms.Compose([
-                    transforms.Scale(self.fineSize),
-                    transforms.ToTensor()])
+            transforms.Scale(self.fineSize),
+            transforms.ToTensor()])
         self.style = transform(img).unsqueeze(0).to(self.device)
 
     def inference(self, cap):
@@ -61,29 +62,28 @@ class StyleTransferModel:
                 sF = self.vgg(self.style)
 
         while True:
-            
-            ret,frame = cap.read()
+
+            ret, frame = cap.read()
             if not ret:
                 break
-            frame = resize(frame,(512,256),interpolation=INTER_CUBIC)
-            frame = frame.transpose((2,0,1))
-            frame = frame[::-1,:,:]
-            frame = frame/255.0
+            frame = resize(frame, (512, 256), interpolation=INTER_CUBIC)
+            frame = frame.transpose((2, 0, 1))
+            frame = frame[::-1, :, :]
+            frame = frame / 255.0
 
             frame = torch.from_numpy(frame.copy()).unsqueeze(0)
             self.content.data.resize_(frame.size()).copy_(frame)
             with torch.no_grad():
                 cF = self.vgg(self.content)
-                if(self.layer == 'r41'):
-                    feature,transmatrix = self.matrix(cF[self.layer],sF[self.layer])
+                if (self.layer == 'r41'):
+                    feature, transmatrix = self.matrix(cF[self.layer], sF[self.layer])
                 else:
-                    feature,transmatrix = self.matrix(cF,sF)
+                    feature, transmatrix = self.matrix(cF, sF)
                 transfer = self.dec(feature)
-            transfer = transfer.clamp(0,1).squeeze(0).data.cpu().numpy()
-            transfer = transfer.transpose((1,2,0))
-            transfer = transfer[...,::-1]
+            transfer = transfer.clamp(0, 1).squeeze(0).data.cpu().numpy()
+            transfer = transfer.transpose((1, 2, 0))
+            transfer = transfer[..., ::-1]
             result_frames.append(transfer * 255)
 
         cap.release()
         return result_frames
-

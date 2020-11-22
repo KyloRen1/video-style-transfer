@@ -1,12 +1,15 @@
+from os import getenv
+
 from cv2.cv2 import VideoCapture
 from telegram import bot, Bot
 from telegram.ext import Updater, run_async, MessageHandler, Filters
 
 from app.model import StyleTransferModel
 
-TOKEN = "1449211534:AAHKKLwNpIFioaDOnolbnG8ZEpFcFUkDkbw"
-MODELS_DIR = "/Users/ioneuk/Documents/machine-learning/style-transfer/Video-style-transfer/models"
-STYLE_PATH = "/Users/ioneuk/Documents/machine-learning/style-transfer/Video-style-transfer/rm.jpg"
+TOKEN = getenv("TOKEN")
+MODELS_DIR = getenv("MODELS_DIR")
+STYLE_PATH = getenv("STYLE_PATH")
+WEBHOOK_URL = getenv("WEBHOOK_URL")
 
 bot = Bot(TOKEN)
 model = StyleTransferModel(MODELS_DIR)
@@ -48,7 +51,7 @@ def main():
     dispatcher.add_handler(video)
 
     updater.start_webhook(listen='127.0.0.1', port=8443, url_path="/")
-    updater.bot.set_webhook(url="https://95e74aae94a1.ngrok.io")
+    updater.bot.set_webhook(url=WEBHOOK_URL)
     updater.idle()
 
 
