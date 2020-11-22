@@ -36,7 +36,7 @@ def video_handler(update, context):
     video_meta.download("out.avi")
     video_capture = VideoCapture("out.avi")
     frames = model.inference(video_capture)
-    print("")
+    bot.send_video(chat_id=update.message.chat.id, video=frames)
 
 
 def main():
